@@ -1,0 +1,12 @@
+查询ERP错误
+SELECT h.processing_status_code from rcv_headers_interface h,rcv_transactions_interface rt
+WHERE h.group_id = rt.group_id
+AND h.shipment_num='000000000S'
+ERP 接口错误表
+SELECT * from po_interface_errors i 
+WHERE i.table_name IN ('RCV_TRANSACTIONS_INTERFACE','RCV_HEADERS_INTERFACE')
+AND I.INTERFACE_HEADER_ID = ?
+AND I.BATCH_ID = ?
+
+
+
