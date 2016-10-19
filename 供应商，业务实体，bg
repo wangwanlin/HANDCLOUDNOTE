@@ -1,0 +1,84 @@
+get_vendor_id
+  SELECT v.vendor_id
+        INTO v_vendor_id
+        FROM pur_vendor_es v
+       WHERE v.es_id = p_external_system_id
+             AND v.es_vendor_id = p_es_vendor_id;
+
+get_vendor_site
+   SELECT v.vendor_site_id
+        INTO x_vendor_site_id
+        FROM pur_vendor_site_es v
+       WHERE v.es_id = p_external_system_id
+             AND v.es_vendor_id = p_es_vendor_id
+             AND (v.es_site_id = p_es_site_id OR (p_es_site_id IS NULL AND v.es_site_code = p_es_site_code));
+get_fnd_location_id
+   SELECT le.location_id
+      INTO v_location_id
+      FROM fnd_locations_es le
+     WHERE le.es_id = p_es_id
+           AND (le.es_location_id = p_es_location_id OR
+           (p_es_location_id IS NULL AND le.es_location_code = p_es_location_code));
+get_inv_org_id
+  SELECT ioe.inv_organization_id
+        INTO v_inv_org_id
+        FROM inv_organizations_es ioe
+       WHERE ioe.es_id = p_es_id
+             AND ioe.es_inv_org_id = p_es_inv_org_id;
+get_bu_id_by_es
+  SELECT e.business_unit_id
+        INTO v_business_unit_id
+        FROM fnd_business_unit_es e
+       WHERE e.business_group = p_business_group
+             AND e.es_id = p_es_id
+             AND e.es_business_unit_id = p_es_business_unit_id;
+根据业务实体获取所属的企业公司      bg-es 一一对应吧
+SELECT u.company_id,
+           f.company_code,
+           f.company_full_name
+      INTO x_owner_company_id,
+           x_owner_company_code,
+           x_owner_company_name
+      FROM fnd_companies_vl     f,
+           fnd_business_units   u,
+           fnd_business_unit_es e
+     WHERE f.company_id = u.company_id
+           AND u.business_unit_id = e.business_unit_id
+           AND e.business_group = p_business_group
+           AND e.es_id = p_external_system_id
+           AND (e.es_business_unit_id = p_es_business_unit_id OR
+           (p_es_business_unit_id IS NULL AND e.es_business_unit_code = p_es_business_unit_code));    
+获取供应商合作企业公司id和合作企业集团
+SELECT fu.company_id,
+           fu.business_group
+      INTO x_coop_company_id,
+           x_coop_business_group
+      FROM inv_organizations  io,
+           fnd_business_units fu
+     WHERE io.business_unit_id = fu.business_unit_id
+           AND io.inv_organization_id = p_organization_id;
+SELECT * from  inv_organizations_vl   库存组织下bu下，bu在bg在.
+获取供应商所属企业公司id和所属企业集团   ,所属怎么取的 coop_company_id
+SELECT pv.coop_company_id,
+           fc.business_group
+      INTO x_owner_company_id,
+           x_owner_business_group
+      FROM pur_vendors   pv,
+           fnd_companies fc
+     WHERE pv.coop_company_id = fc.company_id
+           AND pv.vendor_id = p_vendor_id;
+select * from   pur_vendors  有coop_company_id,coop_bg_id, bg_id.  供应商没有公司吗？
+获取供应商对应的公司信息
+SELECT f.company_id,
+           f.company_code,
+           f.company_full_name,
+           f.business_group
+      INTO x_company_id,
+           x_company_code,
+           x_company_name,
+           x_business_group
+      FROM pur_vendors      v,
+           fnd_companies_vl f
+     WHERE v.coop_company_id = f.company_id
+           AND v.vendor_id = p_vendor_id;
+
