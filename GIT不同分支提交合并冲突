@@ -1,0 +1,5 @@
+从RELEASE 分支克隆的分支， 做完修改后， 合并至dev，可能会有很多冲突文件，自己并没有修改过。 因为release分支与dev分支很多不同，
+别人可能只推送了dev，没有推送release
+方法：   在Synchronize 右键 选择 overwrite,  用代码库里的覆盖本地的。 但其实是删除了冲突文件!!!, 出现星号。  随后接着在Synchronize再做一次
+overwrite, 随后冲突文件就到了本地工程里面了。 在local project 里面 add to index.  
+       add 后，这几个文件就会显示成 代码库里的代码的样子，然后你再提交的时候，就只会提交那些 有变化的 文件.  就酱
