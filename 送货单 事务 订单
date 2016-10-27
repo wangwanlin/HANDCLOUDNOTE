@@ -1,0 +1,3 @@
+占用数量只有送货单创建和接收事务退货和送货单取消但是接收了，才会修改  
+po_location_return_to_vendor， 
+如果送货单已取消，接收事务 asn_receive会 回加到占用上去
