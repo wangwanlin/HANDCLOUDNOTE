@@ -1,0 +1,1 @@
+ SELECT NLS_INITCAP('ni hao hh') from dual NLS_INITCAP    // 把所有单词首字母大写
