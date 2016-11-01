@@ -2,3 +2,18 @@
 user_triggers
 all_triggers
 dba_triggers
+// 判断数据库的锁表
+SELECT *  FROM SYS.DBA_OBJECTS O,
+       (SELECT S.OSUSER,
+               S.USERNAME,
+               L.TYPE,
+               L.LMODE,
+               S.SID,
+               S.SERIAL#,
+               L.ID1,
+               L.ID2
+          FROM V$SESSION S, V$LOCK L
+         WHERE S.SID = L.SID) LS
+ WHERE O.OBJECT_ID = LS.ID1
+   AND O.OWNER <> 'SYS'
+   AND o.owner = 'TRAINITF'
