@@ -30,3 +30,31 @@ SELECT *  FROM SYS.DBA_OBJECTS O,
 where ao.object_id = lo.object_id and lo.session_id = sess.sid; 
 如有記錄則表示有lock，記錄下SID和serial# ，將記錄的ID替換下面的738,1429，即可解除LOCK 
 alter system kill session '738,1429'; 
+// 查看锁包
+ 1：查V$DB_OBJECT_CACHE
+
+SELECT * FROM V$DB_OBJECT_CACHE WHERE name='P_DATA_SYNC_CHECK' AND LOCKS!='0';
+
+注意：P_DATA_SYNC_CHECK为存储过程的名称。
+
+发现locks＝2，
+
+2：按对象查出sid的值
+
+select SID from V$ACCESS WHERE object='P_DATA_SYNC_CHECK';
+
+注意：P_DATA_SYNC_CHECK为存储过程的名称。
+
+3：查sid,serial#
+
+SELECT SID,SERIAL#,PADDR FROM V$SESSION WHERE SID='刚才查到的SID';
+
+4：alter system kill session 'sid值,serial#值' immediate;
+
+
+
+SELECT DISTINCT '(' || s.sid || ') - ' || username AS "(session) - username"     
+FROM V$SESSION s, sys.x$kglob o, sys.x$kglpn p   
+WHERE upper(o.kglnaobj) LIKE upper('%itf_pur_rcv_trx_pkg%')      
+     AND p.kglpnhdl = o.kglhdadr      
+  AND s.SADDR = p.kglpnuse;
