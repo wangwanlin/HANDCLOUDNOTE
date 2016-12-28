@@ -74,3 +74,16 @@ select p.spid,q.sql_text,q.sql_fulltext
    and p.addr = s.paddr
     and p.spid = 12646 
    order by q.cpu_time desc
+   
+-- 二者结合
+select p.spid,q.sql_text,q.sql_fulltext
+  from v$sqlarea q,v$session s,v$process p
+ where q.sql_id = s.sql_id
+   and p.addr = s.paddr
+    and p.spid IN (SELECT p.spid    
+  from v$session s, v$process p, V$LOCKED_OBJECT l, dba_objects b
+ where s.sid = l.SESSION_ID
+   and s.paddr = p.addr
+   AND b.OBJECT_NAME = 'ITF_INSTANCES'
+   and l.OBJECT_ID = b.OBJECT_ID)
+   order by q.cpu_time desc
