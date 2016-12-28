@@ -58,3 +58,19 @@ FROM V$SESSION s, sys.x$kglob o, sys.x$kglpn p
 WHERE upper(o.kglnaobj) LIKE upper('%itf_pur_rcv_trx_pkg%')      
      AND p.kglpnhdl = o.kglhdadr      
   AND s.SADDR = p.kglpnuse;
+
+
+根据进程杀锁，表有多个锁，可以查出sql语句，根据语句杀
+select 'kill -9 ' || p.spid, b.object_name
+  from v$session s, v$process p, V$LOCKED_OBJECT l, dba_objects b
+ where s.sid = l.SESSION_ID
+   and s.paddr = p.addr
+   and l.OBJECT_ID = b.OBJECT_ID;
+
+
+select p.spid,q.sql_text,q.sql_fulltext
+  from v$sqlarea q,v$session s,v$process p
+ where q.sql_id = s.sql_id
+   and p.addr = s.paddr
+    and p.spid = 12646 
+   order by q.cpu_time desc
