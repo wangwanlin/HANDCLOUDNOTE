@@ -17,7 +17,7 @@ SELECT *  FROM SYS.DBA_OBJECTS O,
  WHERE O.OBJECT_ID = LS.ID1
    AND O.OWNER <> 'SYS'
    AND o.owner = 'TRAINITF'；
-   
+   -- 这个查的块
    select sess.sid, 
     sess.serial#, 
     lo.oracle_username, 
